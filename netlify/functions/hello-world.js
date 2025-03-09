@@ -1,4 +1,6 @@
+const mongodb = require("mongodb");
 exports.handler = async (event, context) => {
+  console.log(mongodb);
   return {
     statusCode: 200,
     headers: {
