@@ -1,7 +1,16 @@
 const mongodb = require("mongodb");
 require("dotenv").config();
 exports.handler = async (event, context) => {
-  console.log(mongodb);
+  const connectionString = process.env.MONGO_CONNECTION_STR;
+  const client = new mongodb.MongoClient(connectionString);
+
+  const getDatabase = async () => {
+    if (!client.isConnected) {
+      await client.connect();
+    }
+    return client.db("Users").collection("users"); // Replace with your database name
+  };
+
   return {
     statusCode: 200,
     headers: {
@@ -10,7 +19,7 @@ exports.handler = async (event, context) => {
     },
     body:
       '{ msg: "Hello, World!", CDATA: ' +
-      process.env.MONGO_CONNECTION_STR +
+      JSON.stringify((await getDatabase()).find()) +
       " }",
   };
 };
