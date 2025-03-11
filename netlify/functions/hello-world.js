@@ -17,9 +17,6 @@ exports.handler = async (event, context) => {
       "Content-Type": "text/plain", // For plain text responses
       "Access-Control-Allow-Origin": "*", // Allows requests from any origin
     },
-    body:
-      '{ msg: "Hello, World!", CDATA: ' +
-      JSON.stringify((await getDatabase()).find()) +
-      " }",
+    body: JSON.stringify((await getDatabase()).find()),
   };
 };
