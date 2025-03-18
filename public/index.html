@@ -26,7 +26,7 @@
             body: JSON.stringify({ name: "Jamstack Explorers" }),
             headers: {
               "content-type": "application/json",
-              authorization: "Bearer " + token,
+              "bab-auth": "Bearer " + token,
             },
           }).then((response) => {
             return response.json();
@@ -45,7 +45,7 @@
                 }),
                 headers: {
                   "content-type": "application/json",
-                  authorization: "Bearer " + token,
+                  "bab-auth": "Bearer " + token,
                 },
               });
             };
@@ -59,7 +59,7 @@
                 }),
                 headers: {
                   "content-type": "application/json",
-                  authorization: "Bearer " + token,
+                  "bab-auth": "Bearer " + token,
                 },
               }).then(() => {
                 stickyDiv.remove();
@@ -78,7 +78,7 @@
           body: JSON.stringify({ content: nst.value }),
           headers: {
             "content-type": "application/json",
-            authorization: "Bearer " + token,
+            "bab-auth": "Bearer " + token,
           },
         })
           .then(function (response) {
