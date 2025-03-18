@@ -12,6 +12,7 @@ exports.handler = async (event, context) => {
   }
   const email = verif.body;
 
+  const db = await getDatabase();
   return {
     statusCode: 200,
     headers: {
@@ -21,7 +22,6 @@ exports.handler = async (event, context) => {
     },
     body: process.env.MONGO_CONNECTION_STR,
   };
-  const db = await getDatabase();
   let userWithEmail = (await db.find({ email }).toArray())[0];
 
   if (!userWithEmail) {
