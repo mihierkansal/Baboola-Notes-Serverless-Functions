@@ -19,7 +19,7 @@ exports.handler = async (event, context) => {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "*",
     },
-    body: "KKS",
+    body: process.env.MONGO_CONNECTION_STR,
   };
   const db = await getDatabase();
   let userWithEmail = (await db.find({ email }).toArray())[0];
