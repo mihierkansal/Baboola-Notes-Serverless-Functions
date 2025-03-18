@@ -5,6 +5,9 @@ module.exports = {
       return {
         statusCode: 401,
         body: "Unauthorized",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
       };
     }
 
