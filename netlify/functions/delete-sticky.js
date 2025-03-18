@@ -5,7 +5,7 @@ exports.handler = async (event, context) => {
   const { getDatabase } = require("./get-db.js");
   const auth = event.headers["bab-auth"];
   const verif = authFunctions.verifyAuth(auth);
-  if (verif.statusCode === 401) {
+  if (verif.statusCode !== 200) {
     return verif;
   }
   const email = verif.body;

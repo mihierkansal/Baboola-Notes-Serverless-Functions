@@ -1,7 +1,18 @@
 const jwt = require("jsonwebtoken");
 module.exports = {
   verifyAuth: (auth) => {
-    if (!auth || auth.indexOf("Bearer ") === -1) {
+    if (!auth) {
+      return {
+        statusCode: 213,
+        headers: {
+          "Content-Type": "text/plain", // For plain text responses
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*",
+        },
+        body: "No auth header",
+      };
+    }
+    if (auth.indexOf("Bearer ") === -1) {
       return {
         statusCode: 401,
         body: "Unauthorized",

@@ -7,7 +7,7 @@ exports.handler = async (event, context) => {
   const auth = event.headers["bab-auth"];
 
   const verif = authFunctions.verifyAuth(auth);
-  if (verif.statusCode === 401) {
+  if (verif.statusCode !== 200) {
     return verif;
   }
   const email = verif.body;
@@ -31,7 +31,7 @@ exports.handler = async (event, context) => {
     headers: {
       "Content-Type": "text/plain", // For plain text responses
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "*", // Allows requests from any origin
+      "Access-Control-Allow-Headers": "*",
     },
     body: JSON.stringify(userWithEmail),
   };
