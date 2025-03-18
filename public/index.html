@@ -10,24 +10,84 @@
     <h1>Up and Running with Serverless Functions</h1>
     <button id="fetch-btn">Fetch</button>
     <p id="response-output">Response Placeholder</p>
-
+    <div id="stickies"></div>
+    <textarea id="nst"></textarea><br />
+    <button id="asb">Add Sticky</button>
     <script>
+      const token =
+        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImQzY2QwOGMyIn0.eyJzdWIiOiJmOTNhNTFlYy1jYzNhLTQ0MjMtOTkwOC1kZmU1NmY2MGRhOTciLCJuYW1lIjoiTWloaWVyIEsiLCJlbWFpbCI6Im1paGllcmthbnNhbEBvdXRsb29rLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpudWxsLCJtZXRhZGF0YSI6e30sInJvbGVzIjpbIkFkbWluIl0sInBlcm1pc3Npb25zIjpbImZlLmFjY291bnQtc2V0dGluZ3MucmVhZC5hcHAiLCJmZS5zZWN1cmUuKiIsImZlLmNvbm5lY3Rpdml0eS4qIl0sInRlbmFudElkIjoiYTNlODdmYTUtNjc2Yi00ODNlLWI4YzItNjMzZmNjYTFmOGRmIiwidGVuYW50SWRzIjpbImEzZTg3ZmE1LTY3NmItNDgzZS1iOGMyLTYzM2ZjY2ExZjhkZiJdLCJwcm9maWxlUGljdHVyZVVybCI6Imh0dHBzOi8vd3d3LmdyYXZhdGFyLmNvbS9hdmF0YXIvMzQ1OTJhNTc1NTExMWJiNWRkNDQ0YWE2N2IwZGZmNjc_ZD1odHRwczovL3VpLWF2YXRhcnMuY29tL2FwaS9NaWhpZXIrSy8xMjgvcmFuZG9tIiwic2lkIjoiNTZkYjgxZWUtOWY0Ni00OGZlLTkxYTktYzQ1ZDM4Nzc4MTNlIiwidHlwZSI6InVzZXJUb2tlbiIsImFwcGxpY2F0aW9uSWQiOiJmOGRlNWU1Mi1kNzUzLTQ0NzgtYjE4Ni04OTlmZGUwYTgzZGYiLCJhdWQiOiJkM2NkMDhjMi1lZTQ5LTRjZjQtODkzMi0wNjRlODNmNjM0ZjgiLCJpc3MiOiJodHRwczovL2JhYm9vbGEudXMuZnJvbnRlZ2cuY29tIiwiaWF0IjoxNzQyMzE0NzkzLCJleHAiOjE3NDI0MDExOTN9.pQSOZq48tjhTCTx0xfCySalr-0wGLm18hYx-ixh1oIKr_tyLzjKhKbtFIEs7TN450UzePGNI60R3tTeJgrLriwd7oRzrMluvOnRPxzmWzMV8QbmXF63tyCT198z8OMKFfZ5QRwF_9Qvfz2szap6R87VKRbe503JQbuaEgESNiKecI94Jy3mZVKrYt7H-gD2W1HPNzSH7-Ti07aXDVDhpuL4v3tDVBjienDp0Ywb_V4-Kd_ESGmILaLg13YY2pdp4JJfJkl5FKXfqJ7T8JonMLtqxOVV85Z28iheqjvunNZntIvPRQh3jBH0mQAQQTdvKowT3Te-CF164Oq2U3KaV1g";
       document.addEventListener("DOMContentLoaded", () => {
         const fetchBtn = document.getElementById("fetch-btn");
         const responseText = document.getElementById("response-output");
 
         fetchBtn.addEventListener("click", async () => {
-          const response = await fetch("/.netlify/functions/users").then(
-            (response) => {
-              return response.text();
-            }
-          );
+          const response = await fetch("/.netlify/functions/user", {
+            method: "POST",
+            body: JSON.stringify({ name: "Jamstack Explorers" }),
+            headers: {
+              "content-type": "application/json",
+              authorization: "Bearer " + token,
+            },
+          }).then((response) => {
+            return response.json();
+          });
 
-          responseText.innerText = response;
+          response.stickies.forEach((sticky) => {
+            const stickyDiv = document.createElement("div");
+            stickyDiv.innerText = sticky.content;
+            stickyDiv.contentEditable = true;
+            stickyDiv.ondblclick = () => {
+              fetch("/.netlify/functions/save-sticky", {
+                method: "POST",
+                body: JSON.stringify({
+                  content: stickyDiv.innerText,
+                  existingSticky: sticky._id,
+                }),
+                headers: {
+                  "content-type": "application/json",
+                  authorization: "Bearer " + token,
+                },
+              });
+            };
+
+            stickyDiv.oncontextmenu = (e) => {
+              e.preventDefault();
+              fetch("/.netlify/functions/delete-sticky", {
+                method: "POST",
+                body: JSON.stringify({
+                  sticky: sticky._id,
+                }),
+                headers: {
+                  "content-type": "application/json",
+                  authorization: "Bearer " + token,
+                },
+              }).then(() => {
+                stickyDiv.remove();
+              });
+            };
+            stickies.appendChild(stickyDiv);
+          });
         });
 
         fetchBtn.click();
       });
+
+      asb.onclick = () => {
+        fetch("/.netlify/functions/save-sticky", {
+          method: "POST",
+          body: JSON.stringify({ content: nst.value }),
+          headers: {
+            "content-type": "application/json",
+            authorization: "Bearer " + token,
+          },
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            location.reload();
+          });
+      };
     </script>
   </body>
 </html>

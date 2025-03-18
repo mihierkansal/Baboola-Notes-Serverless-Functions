@@ -1,0 +1,36 @@
+const mongodb = require("mongodb");
+
+require("dotenv").config();
+const authFunctions = require("./verify-auth.js");
+exports.handler = async (event, context) => {
+  const { getDatabase } = require("./get-db.js");
+  const auth = event.headers["authorization"];
+  const verif = authFunctions.verifyAuth(auth);
+  if (verif.statusCode === 401) {
+    return verif;
+  }
+  const email = verif.body;
+
+  const db = await getDatabase();
+  let userWithEmail = (await db.find({ email }).toArray())[0];
+
+  if (!userWithEmail) {
+    const newUser = {
+      email,
+      _id: new mongodb.ObjectId(),
+      notebooks: [],
+      stickies: [],
+    };
+    await db.insertOne(newUser);
+    userWithEmail = newUser;
+  }
+
+  return {
+    statusCode: 200,
+    headers: {
+      "Content-Type": "text/plain", // For plain text responses
+      "Access-Control-Allow-Origin": "*", // Allows requests from any origin
+    },
+    body: JSON.stringify(userWithEmail),
+  };
+};
