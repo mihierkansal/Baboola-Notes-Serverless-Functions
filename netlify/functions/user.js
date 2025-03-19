@@ -20,7 +20,7 @@ exports.handler = async (event, context) => {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "*",
     },
-    body: process.env.MONGO_CONNECTION_STR,
+    body: JSON.stringify(db), //JSON.stringify(userWithEmail),
   };
   let userWithEmail = (await db.find({ email }).toArray())[0];
 
