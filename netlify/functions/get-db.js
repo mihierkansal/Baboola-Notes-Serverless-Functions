@@ -7,7 +7,11 @@ module.exports = {
 
     const client = new mongodb.MongoClient(connectionString);
     if (!client.isConnected) {
-      await client.connect();
+      try {
+        await client.connect();
+      } catch (e) {
+        return e;
+      }
     }
     return mongodb;
     console.log(client.db("Users"));
