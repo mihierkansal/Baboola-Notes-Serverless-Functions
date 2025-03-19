@@ -15,13 +15,15 @@ exports.handler = async (event, context) => {
 
   const userId = userWithEmail._id;
   const body = JSON.parse(event.body);
-
+  let setObj = body.newName
+    ? { "notebooks.$.pages.$[page].title": body.newName }
+    : { "notebooks.$.pages.$[page].content": body.newContent };
   db.updateOne(
     {
       _id: userId,
       "notebooks._id": new mongodb.BSON.ObjectId(body.notebookId),
     }, // Match the user and notebook
-    { $set: { "notebooks.$.pages.$[page].content": body.newContent } }, // Update the `content`
+    { $set: setObj }, // Update the `content`
     { arrayFilters: [{ "page._id": new mongodb.BSON.ObjectId(body.pageId) }] } // Specify which page to update
   );
 
