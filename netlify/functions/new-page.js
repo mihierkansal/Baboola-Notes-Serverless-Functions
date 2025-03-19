@@ -39,6 +39,6 @@ exports.handler = async (event, context) => {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "*", // Allows requests from any origin
     },
-    body: `${JSON.stringify(newPage)}, ${JSON.stringify(body)}`,
+    body: `${JSON.stringify(newPage)}`,
   };
 };
