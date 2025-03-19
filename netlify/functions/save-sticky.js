@@ -52,7 +52,7 @@ exports.handler = async (event, context) => {
 
     await db.updateOne(
       { _id: userId }, // Filter to find the user by their ID
-      { $push: { stickies: newSticky } } // Push newSticky into the stickies array
+      { $push: { stickies: newSticky } } // Push into the array
     );
   }
 

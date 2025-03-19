@@ -10,9 +10,13 @@
     <h1>Up and Running with Serverless Functions</h1>
     <button id="fetch-btn">Fetch</button>
     <p id="response-output">Response Placeholder</p>
+    STIKIES
     <div id="stickies"></div>
     <textarea id="nst"></textarea><br />
-    <button id="asb">Add Sticky</button>
+    <button id="asb">Add Sticky</button><br /><br /><br />
+    BOOKS
+    <div id="books"></div>
+    <button id="nnb">New Notebook</button>
     <script>
       const token =
         "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImQzY2QwOGMyIn0.eyJzdWIiOiIwMjg3M2FjOC1hMWU3LTQ1MTItOWU1NS04ZTk1NDQzNDYzNDQiLCJuYW1lIjoiTWloaWVyIEsiLCJlbWFpbCI6Im1paGllcmthbnNhbEBvdXRsb29rLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpudWxsLCJtZXRhZGF0YSI6e30sInJvbGVzIjpbIkFkbWluIl0sInBlcm1pc3Npb25zIjpbImZlLmFjY291bnQtc2V0dGluZ3MucmVhZC5hcHAiLCJmZS5zZWN1cmUuKiIsImZlLmNvbm5lY3Rpdml0eS4qIl0sInRlbmFudElkIjoiNzM0NTVmNjQtY2QzNS00ZDM3LWEwZjctNWM2MmVjNGFlNGVkIiwidGVuYW50SWRzIjpbIjczNDU1ZjY0LWNkMzUtNGQzNy1hMGY3LTVjNjJlYzRhZTRlZCJdLCJwcm9maWxlUGljdHVyZVVybCI6Imh0dHBzOi8vd3d3LmdyYXZhdGFyLmNvbS9hdmF0YXIvMzQ1OTJhNTc1NTExMWJiNWRkNDQ0YWE2N2IwZGZmNjc_ZD1odHRwczovL3VpLWF2YXRhcnMuY29tL2FwaS9NaWhpZXIrSy8xMjgvcmFuZG9tIiwic2lkIjoiZmZiYTliZTMtYzlhMi00MzExLTk3ODMtNDYxYjVlNWY1MTc4IiwidHlwZSI6InVzZXJUb2tlbiIsImFwcGxpY2F0aW9uSWQiOiJlNDhhNDBjYy01ZDcwLTRlN2ItODdhNi0xZDNmNDE5MTMxODgiLCJhdWQiOiJkM2NkMDhjMi1lZTQ5LTRjZjQtODkzMi0wNjRlODNmNjM0ZjgiLCJpc3MiOiJodHRwczovL2JhYm9vbGEudXMuZnJvbnRlZ2cuY29tIiwiaWF0IjoxNzQyMzMwNDEyLCJleHAiOjE3NDI0MTY4MTJ9.GrFc0LeQE1_44rk1r5yehJLDYaDiy5134fyeGWqNTP4nUvXMBYwKUlJDOWlMMEPAN03LJSAD1bdekXVzxgZEQokX_Z9ddz3_F7Ixunt_gXyarx9ltZ-e7RWsDN9HEpFWCHDzUAsBV3zTx_dkJF_6N5_FobMZlKLXJIZfiKoprX58EpvUTPvxMBC6GfmuVwO0Ys1Man-2hObBbUZ7vgqyNW4mxxtXw4EhZxK17EYWabKBfhRzyNW73YAZ0AaZcQFWQb4PYmndvYZOabb97TLwCqVRs3GruOqZgiXfORw-wUB7PSkJgelK8nvk8XP9H9GFZRbspBZ2QTQ05Yk_iraBvw";
@@ -67,8 +71,66 @@
             };
             stickies.appendChild(stickyDiv);
           });
-        });
+          response.notebooks.forEach((book) => {
+            const div = document.createElement("div");
+            div.innerHTML = book.name;
+            div.oncontextmenu = () => {
+              const newName = prompt("Enter new notebook name ");
+              fetch("/.netlify/functions/rename-notebook", {
+                method: "POST",
+                body: JSON.stringify({ notebook: book._id, newName: newName }),
+                headers: {
+                  "content-type": "application/json",
+                  "bab-auth": "Bearer " + token,
+                },
+              }).then(() => {
+                location.reload();
+              });
+            };
 
+            book.pages.forEach((page) => {
+              const pageTA = document.createElement("textarea");
+              pageTA.style.display = "block";
+              pageTA.value = page.content;
+              pageTA.oninput = (e) => {
+                fetch("/.netlify/functions/update-page", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    notebookId: book._id,
+                    newContent: e.target.value,
+                    pageId: page._id,
+                  }),
+                  headers: {
+                    "content-type": "application/json",
+                    "bab-auth": "Bearer " + token,
+                  },
+                });
+              };
+              div.appendChild(pageTA);
+            });
+            const newPageBtn = document.createElement("button");
+            newPageBtn.onclick = () => {
+              fetch("/.netlify/functions/new-page", {
+                method: "POST",
+                body: JSON.stringify({
+                  notebookId: book._id,
+                  pageTitle: prompt("New page title"),
+                  content: "notebook page",
+                }),
+                headers: {
+                  "content-type": "application/json",
+                  "bab-auth": "Bearer " + token,
+                },
+              }).then(() => {
+                location.reload();
+              });
+            };
+            newPageBtn.innerText = "New Page";
+            div.appendChild(newPageBtn);
+            div.style.marginBlock = "1rem";
+            books.appendChild(div);
+          });
+        });
         fetchBtn.click();
       });
 
@@ -85,6 +147,26 @@
             return response.json();
           })
           .then(function (data) {
+            location.reload();
+          });
+      };
+
+      nnb.onclick = () => {
+        fetch("/.netlify/functions/new-notebook", {
+          method: "POST",
+          body: JSON.stringify({
+            notebookName: "New Notebook " + Math.random(),
+          }),
+          headers: {
+            "content-type": "application/json",
+            "bab-auth": "Bearer " + token,
+          },
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            console.log(data);
             location.reload();
           });
       };
