@@ -6,10 +6,10 @@ module.exports = {
     const connectionString = process.env.MONGO_CONNECTION_STR;
 
     const client = new mongodb.MongoClient(connectionString);
-    return mongodb;
     if (!client.isConnected) {
       await client.connect();
     }
+    return mongodb;
     console.log(client.db("Users"));
     return client.db("Users").collection("users");
   },
