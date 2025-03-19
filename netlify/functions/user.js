@@ -13,15 +13,7 @@ exports.handler = async (event, context) => {
   const email = verif.body;
 
   const db = await getDatabase();
-  return {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "text/plain", // For plain text responses
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "*",
-    },
-    body: JSON.stringify(db), //JSON.stringify(userWithEmail),
-  };
+
   let userWithEmail = (await db.find({ email }).toArray())[0];
 
   if (!userWithEmail) {
