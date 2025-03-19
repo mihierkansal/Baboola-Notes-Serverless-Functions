@@ -3,10 +3,10 @@ require("dotenv").config();
 
 module.exports = {
   getDatabase: async () => {
-    return mongodb;
     const connectionString = process.env.MONGO_CONNECTION_STR;
 
     const client = new mongodb.MongoClient(connectionString);
+    return mongodb;
     if (!client.isConnected) {
       await client.connect();
     }
